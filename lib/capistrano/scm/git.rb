@@ -48,7 +48,12 @@ class Capistrano::SCM::Git < Capistrano::SCM::Plugin
 
   def update_mirror
     # Update the origin URL if necessary.
-    git :remote, "add", "origin", git_repo_url
+    begin
+      git :remote, "add", "origin", git_repo_url
+    rescue Exception => e
+      git :remote, "set-url", "origin", git_repo_url
+      puts e
+    end
 
     # Note: Requires git version 1.9 or greater
     if (depth = fetch(:git_shallow_clone))
